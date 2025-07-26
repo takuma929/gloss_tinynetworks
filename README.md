@@ -1,102 +1,117 @@
-Human Gloss Perception and Tiny Neural Networks: Figure Generation and Data Processing
+# Human Gloss Perception and Tiny Neural Networks: Figure Generation and Data Processing
+
 This repository contains the source code, example data, and scripts required to process behavioral and computational model data, and to generate all main and supplementary figures for the manuscript:
 
-Takuma Morimoto, Arash Akbarinia, Katherine Storrs, Jacob R. Cheeseman, Hannah E. Smithson, Karl R. Gegenfurtner, and Roland W. Fleming
-“Human gloss perception reproduced by tiny neural networks”. bioRxiv.
-https://doi.org/10.1101/2025.05.09.653112
+**Takuma Morimoto, Arash Akbarinia, Katherine Storrs, Jacob R. Cheeseman, Hannah E. Smithson, Karl R. Gegenfurtner, and Roland W. Fleming**
+"Human gloss perception reproduced by tiny neural networks."
+*bioRxiv*
+[https://doi.org/10.1101/2025.05.09.653112](https://doi.org/10.1101/2025.05.09.653112)
 
-1. System Requirements
-Operating System:
-Windows, macOS, or Ubuntu (tested on macOS ver 15.3.2)
+---
 
-MATLAB Version:
-R2020a or newer (tested on R2020a, R2024b)
+## 1. System Requirements
 
-Required MATLAB Toolboxes:
+* **Operating System:**
+  Windows, macOS, or Ubuntu (tested on macOS ver 15.3.2)
 
-Image Processing Toolbox (tested on v11.1, v24.2)
+* **MATLAB Version:**
+  R2020a or newer (tested on R2020a, R2024b)
 
-Statistics and Machine Learning Toolbox (tested on v11.7, v24.2)
+* **Required MATLAB Toolboxes:**
 
-Curve Fitting Toolbox (tested on v3.5.11, v24.2)
+  * Image Processing Toolbox (v11.1, v24.2)
+  * Statistics and Machine Learning Toolbox (v11.7, v24.2)
+  * Curve Fitting Toolbox (v3.5.11, v24.2)
+  * Computer Vision Toolbox (v9.2, v24.2)
+  * Optimization Toolbox (v8.5, v24.2)
 
-Computer Vision Toolbox (tested on v9.2, v24.2)
+* **Hardware:**
+  Standard desktop/laptop computer (no special hardware required)
 
-Optimization Toolbox (tested on v8.5, v24.2)
+---
 
-Hardware:
-Standard desktop or laptop computer (no special requirements)
+## 2. Installation Guide
 
-2. Installation Guide
-Download the repository:
+1. Download the repository:
+   [https://github.com/takuma929/gloss\_tinynetworks](https://github.com/takuma929/gloss_tinynetworks)
+   Or clone with git:
 
-Download ZIP or clone via terminal:
+   ```
+   git clone https://github.com/takuma929/gloss_tinynetworks.git
+   ```
 
-bash
-Copy
-Edit
-git clone https://github.com/takuma929/gloss_tinynetworks.git
-Open MATLAB, set the repository root directory as your working directory.
+2. Open MATLAB and set the repository root directory as your working directory.
 
-Add all subfolders to the MATLAB path.
+3. Add all subfolders to the MATLAB path.
 
-3. Demo: Generate All Figures
+---
+
+## 3. Demo: Generate All Figures
+
 To generate all figures and process the data as in the manuscript:
 
-Start MATLAB and navigate to the main project folder.
+1. Start MATLAB and navigate to the main project folder.
 
-Run the following command in the MATLAB Command Window:
+2. Run the following command in the MATLAB Command Window:
 
-matlab
-Copy
-Edit
-main
-All figures will be saved to the figs/ directory, and cleaned data files will be saved in the data/ directory.
+   ```
+   main
+   ```
 
-Expected Output:
+3. All figures will be saved to the `figs/` directory, and cleaned data files will be saved in the `data/` directory.
 
-PDF and PNG files for all main and supplementary figures
+**Expected Output:**
 
-Cleaned MATLAB data files (e.g., onlineData.mat)
+* PDF and PNG files for all main and supplementary figures
+* Cleaned MATLAB data files (e.g., `onlineData.mat`)
 
-Typical Install & Run Times:
+**Typical install & run times:**
 
-Setup: < 1 minute (copy/unzip files, add to path)
+* Setup: less than 1 minute (copy/unzip files and MATLAB path setup)
+* Data download: repository (with datasets) is > 6 GB (download time depends on your internet speed)
+* Expected run time: \~5–10 minutes on a standard computer
 
-Data download: Repository (with datasets) is > 6 GB; download time depends on your internet connection
+---
 
-Expected run time: ~5–10 minutes on a standard computer
+## 4. Instructions for Use
 
-4. Instructions for Use
-Run Individual Figures or Custom Analyses:
+* To run individual figure scripts or customize analyses:
 
-Each figure has its own script (e.g., fig3_model_comparison.m for Figure 3)
+  * Each figure has its own script (e.g., `fig3_model_comparison.m` for Figure 3).
+  * Prepare the data first by running `process_onlinedata.m`.
+  * You can run any script individually after data preparation.
 
-Prepare the data first by running process_onlinedata.m
+* Reproducing results in the manuscript:
 
-Scripts are modular and can be adapted or extended for your analysis
+  * Running `main.m` will reproduce all results and figures as reported in the paper.
 
-Full Reproducibility:
+* The scripts are modular; you can adapt or extend the analyses as needed.
 
-Running main.m will reproduce all results and figures as reported in the manuscript
+---
 
-5. License
-Distributed under the MIT License.
+## 5. License
 
-6. Open Source Repository
-GitHub: https://github.com/takuma929/gloss_tinynetworks
+This code is distributed under the MIT License.
 
-DOI: Data will be uploaded to Zenodo (or similar) upon publication.
+---
 
-7. Software Description & Documentation
-Key Operations:
-Processes behavioral and computational model response data, applies exclusion criteria, computes summary statistics, and generates all figures.
+## 6. Open Source Repository
 
-Fundamental Tasks:
-Data cleaning, model evaluation, analysis, and publication-ready figure generation.
+* GitHub: [https://github.com/takuma929/gloss\_tinynetworks](https://github.com/takuma929/gloss_tinynetworks)
+* DOI: Data will be uploaded to Zenodo or a similar repository upon publication.
 
-Algorithms & Approach:
-Standard psychophysical data processing, correlation analysis, kernel fitting, t-SNE visualization, and comparison of model predictions with human perception.
+---
 
-Dependencies:
-Standard MATLAB toolboxes only. Other code dependencies are included in the function directory.
+## 7. Software Description and Documentation
+
+* **Key operations:**
+  The software processes behavioral and computational model response data, applies exclusion criteria, computes summary statistics, and generates all figures in the manuscript.
+
+* **Fundamental tasks:**
+  Data cleaning, model evaluation, analysis, and figure generation for publication.
+
+* **Algorithms and approach:**
+  Standard psychophysical data processing, correlation analysis, kernel fitting, t-SNE visualization, and comparison of model predictions with human perception.
+
+* **Dependencies:**
+  Only standard MATLAB toolboxes required. Other dependencies are included in the `function` directory.
