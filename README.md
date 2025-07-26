@@ -1,7 +1,7 @@
 # Human Gloss Perception: Figure Generation and Data Processing
 This repository contains the source code, example data, and scripts required to process behavioral and computational model data, and to generate all main and supplementary figures for the manuscript: Takuma Morimoto, Arash Akbarinia, Katherine Storrs, Jacob R. Cheeseman, Hannah E. Smithson, Karl R. Gegenfurtner and Roland W. Fleming, “Human gloss perception reproduced by tiny neural networks”. bioRxiv. https://doi.org/10.1101/2025.05.09.653112
 
-1. System Requirements
+################## (1) System Requirements ##################
 Operating System:
 
 Windows, macOS, Ubuntu (tested on macOS ver 15.3.2)
@@ -19,7 +19,8 @@ Optimization Toolbox (tested on Version 8.5, Version 24.2)
 
 No non-standard hardware required; standard desktop/laptop computer
 
-2. Installation Guide
+################## (2) Installation Guide ##################
+
 Instructions:
 
 Download and unzip the zip file at https://github.com/takuma929/gloss_tinynetworks or clone the repository:
@@ -30,7 +31,7 @@ Open MATLAB and set the root directory as your working directory.
 
 Add all subfolders to the MATLAB path.
 
-3. Demo
+################## (3) Demo ##################
 To generate all figures and process the data as in the manuscript:
 
 Start MATLAB and navigate to the main folder.
@@ -57,7 +58,7 @@ Expected run time:
 
 ~ 5 – 10 minutes on a standard computer
 
-4. Instructions for Use
+################## (4) Instructions for Use ##################
 To run individual figure scripts or customize analyses:
 
 Each figure has its own script (e.g., fig3_model_comparison.m for Figure 3).
@@ -70,15 +71,15 @@ Running the main.m script will reproduce all results and figures reported in the
 
 Scripts are modular; users can adapt or extend analysis as needed.
 
-5. License
+################## (5) License ##################
 This code is distributed under the MIT License.
 
-6. Open Source Repository
+################## (6) Open Source Repository ##################
 GitHub: https://github.com/takuma929/gloss_tinynetworks
 
 DOI: Data will be uploaded to Zenodo or a similar repository upon publication.
 
-7. Software Description and Documentation
+################## (7) Software Description and Documentation ##################
 Key operations:
 The software processes behavioral and computational model response data, applies exclusion criteria, computes summary statistics, and generates all figures in the manuscript.
 
