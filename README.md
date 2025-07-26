@@ -1,6 +1,8 @@
 # Human Gloss Perception and Tiny Neural Networks: Figure Generation and Data Processing
 
-This repository contains the source code, example data, and scripts required to process behavioral and computational model data, and to generate all main and supplementary figures for the manuscript:
+![Repository Thumbnail](thumbnail.png)
+
+This repository contains the source code, example data, and scripts required to process behavioural and computational model data, and to generate all main and supplementary figures for the manuscript:
 
 **Takuma Morimoto, Arash Akbarinia, Katherine Storrs, Jacob R. Cheeseman, Hannah E. Smithson, Karl R. Gegenfurtner, and Roland W. Fleming**
 "Human gloss perception reproduced by tiny neural networks."
