@@ -26,7 +26,7 @@ Instructions:
 
 Download and unzip the zip file at https://github.com/takuma929/gloss_tinynetworks or clone the repository:
 
-git clone gloss_tinynetworks
+	git clone gloss_tinynetworks
 
 Open MATLAB and set the root directory as your working directory.
 
@@ -40,7 +40,7 @@ Start MATLAB and navigate to the main folder.
 
 Run the following command in the MATLAB Command Window:
 
-    main
+    	main
 
 All figures will be saved to the figs/ directory, and cleaned data files will be saved in the data/ directory.
 
