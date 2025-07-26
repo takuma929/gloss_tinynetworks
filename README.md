@@ -14,10 +14,10 @@ This repository contains the source code, example data, and scripts required to 
 ## 1. System Requirements
 
 * **Operating System:**
-  Windows, macOS, or Ubuntu (tested on macOS ver 15.3.2)
+  Windows, macOS, or Ubuntu (tested on macOS ver 15.3.2, Ubuntu 24.04 LTS)
 
 * **MATLAB Version:**
-  R2020a or newer (tested on R2020a, R2024b)
+  R2020a or newer (tested on R2020a, R2023a, R2024b)
 
 * **Required MATLAB Toolboxes:**
 
