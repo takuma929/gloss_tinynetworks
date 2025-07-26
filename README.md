@@ -34,7 +34,7 @@ This repository contains the source code, example data, and scripts required to 
 
 1. Download the repository:
    [https://github.com/takuma929/gloss\_tinynetworks](https://github.com/takuma929/gloss_tinynetworks)
-   Or clone with git:
+   or clone with git:
 
    ```
    git clone https://github.com/takuma929/gloss_tinynetworks.git
