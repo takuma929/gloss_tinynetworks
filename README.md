@@ -53,12 +53,12 @@ Cleaned MATLAB data files (e.g., onlineData.mat)
 Typical install time:
 
 Setup: Less than 1 minute (copy/unzip files and MATLAB path setup)
+
 Data download: The full repository, including all source code and required example datasets, is > 6 GB.
+
 Downloading the data files may take for a while, depending on your internet speed
 
-Expected run time: 
-
-~ 5 – 10 minutes on a standard computer
+Expected run time: ~ 5 – 10 minutes on a standard computer
 
 ################## (4) Instructions for Use ##################
 
