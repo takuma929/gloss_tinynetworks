@@ -81,6 +81,10 @@ for area = {'onelayer', 'threelayer'}
 
         % Mean line
         meany = mean(corr_list);
+        stdy = std(corr_list);
+        disp([area{1}, ' ', type{1}, ' Mean: ', num2str(meany)])
+        disp([area{1}, ' ', type{1}, ' SD: ', num2str(stdy)])
+
         line([0, 100], [meany, meany], 'LineStyle', ':', 'LineWidth', 1, 'Color', [1 0.5 1])
         text(8.5, meany*1.08, num2str(round(meany*100)/100), 'FontSize', 7, 'FontName', 'Arial', 'Color', 'm')
 

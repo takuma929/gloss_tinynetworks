@@ -82,6 +82,9 @@ fig = figure;
 line([0 1],[0 1],'LineWidth',0.5,'Color',[0 0 0]);hold on
 scatter(gt_Pellacini_c, human_Pellacini_c.mean,10,[0.5,0.5,0.5],'o','filled','LineWidth',0.5,'MarkerFaceAlpha',0.1,'MarkerEdgeColor','none');
 
+[r, p] = corr(gt_Pellacini_c, human_Pellacini_c.mean, 'type', 'Pearson');
+fprintf('fig2a Pearson correlation: r = %.3f, p = %.3g\n', r, p);
+
 ax = gca;
 fig.Units           = 'centimeters';
 fig.Position = [10,10,figp.twocolumn/4,figp.twocolumn/4];
@@ -282,6 +285,12 @@ function fig_histogram(data, nbins, x_label, y_label, color, filename)
     ticklengthcm(ax,0.1)
     grid off; ax.YGrid = 'off'; box off
     exportgraphics(fig, filename, 'ContentType', 'vector')
+
+    % Calculate and display IQR in command window only
+    q1 = quantile(data, 0.25);
+    q3 = quantile(data, 0.75);
+    IQR = q3 - q1;
+    fprintf('IQR = %.3f - %.3f = %.3f\n', q3, q1, IQR);
 end
 
 function numBins = calculateBins(data)

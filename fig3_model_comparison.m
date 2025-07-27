@@ -75,7 +75,10 @@ end
 for traininglabel = {'human','groundtruth'}
     for corr_label = {'human','gt'}
         oneLayer_corr.(traininglabel{1}).(corr_label{1}) = mean(reshape(corr_all.onelayer.(traininglabel{1}).(corr_label{1}),24,length(kernelN_list.onelayer)));
+        oneLayer_corr_SD.(traininglabel{1}).(corr_label{1}) = std(reshape(corr_all.onelayer.(traininglabel{1}).(corr_label{1}),24,length(kernelN_list.onelayer)));
+
         threeLayers_corr.(traininglabel{1}).(corr_label{1}) = mean(reshape(corr_all.threelayer.(traininglabel{1}).(corr_label{1}),24,length(kernelN_list.threelayer)));
+        threeLayers_corr_SD.(traininglabel{1}).(corr_label{1}) = std(reshape(corr_all.threelayer.(traininglabel{1}).(corr_label{1}),24,length(kernelN_list.threelayer)));
     end
 end
 

@@ -143,12 +143,15 @@ for a = 1:length(models)
     misclassified_idx = find(pred_class ~= label);
     dists = abs(preds(misclassified_idx) - thresh);
     mean_dist = mean(dists);
+    std_dist = std(dists);
 
     % Print performance metrics to console
     fprintf('Model: %s\n', name);
     fprintf('  Accuracy: %.2f%%\n', accuracy.(name));
     fprintf('  d-prime: %.2f\n', dprime.(name));
-    fprintf('  Mean distance to threshold (misclassified images): %.4f\n\n', mean_dist);
+    fprintf('  Mean distance to threshold (misclassified images): %.4f\n', mean_dist);
+    fprintf('  SD of distance: %.4f\n\n', std_dist);
+
 end
 
 disp('Done.')
