@@ -88,20 +88,31 @@ end
 
 
 %% Statistical comparison: background vs. no-background
-[h_two, p_two, ci_two, stats_two] = ...
-    ttest(mean(corr_bg.threelayer.human, 2), mean(corr_nobg.threelayer.human, 2), 'tail', 'both');
 
-[h_one, p_one, ci_one, stats_one] = ...
-    ttest(mean(corr_bg.onelayer.human, 2), mean(corr_nobg.onelayer.human, 2), 'tail', 'both');
+% Three-layer
+bg_vals_two = mean(corr_bg.threelayer.human, 2);
+nobg_vals_two = mean(corr_nobg.threelayer.human, 2);
+[h_two, p_two, ci_two, stats_two] = ttest(bg_vals_two, nobg_vals_two, 'tail', 'both');
+diff_two = bg_vals_two - nobg_vals_two;
+d_two = mean(diff_two) / std(diff_two);
+
+% One-layer
+bg_vals_one = mean(corr_bg.onelayer.human, 2);
+nobg_vals_one = mean(corr_nobg.onelayer.human, 2);
+[h_one, p_one, ci_one, stats_one] = ttest(bg_vals_one, nobg_vals_one, 'tail', 'both');
+diff_one = bg_vals_one - nobg_vals_one;
+d_one = mean(diff_one) / std(diff_one);
 
 % Display results
 disp('--- Three-layer stats ---');
 disp(stats_two)
 disp(['p = ', num2str(p_two)])
+disp(['Cohen''s d = ', num2str(d_two)])
 
 disp('--- One-layer stats ---');
 disp(stats_one)
 disp(['p = ', num2str(p_one)])
+disp(['Cohen''s d = ', num2str(d_one)])
 
 disp('Done.')
 close all

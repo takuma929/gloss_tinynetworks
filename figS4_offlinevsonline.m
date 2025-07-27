@@ -86,7 +86,7 @@ end
 for group = {'group1','group2'}
     online_avg  = mean(response_group.(group{1})(1:72,:), 2);
     offline_avg = mean(squeeze(mean(offline_group.(group{1}), 2)), 2);
-    corrCoeff.offlinevsonline_mean.(group{1}) = corr(online_avg, offline_avg);
+    [corrCoeff.offlinevsonline_mean.(group{1}),pval.(group{1})] = corr(online_avg, offline_avg);
 end
 
 %% Correlation: all combinations between online and offline observers
@@ -203,6 +203,12 @@ function fig_histogram(data, nbins, x_label, y_label, color, filename)
     fig.Color = 'w'; fig.InvertHardcopy = 'off';
 
     exportgraphics(fig, filename, 'ContentType', 'vector')
+
+    % --- Calculate and report IQR ---
+    q1 = quantile(data, 0.25);
+    q3 = quantile(data, 0.75);
+    iqr_val = q3 - q1;
+    fprintf('IQR = %.3f - %.3f = %.3f\n', q3, q1, iqr_val);
 end
 
 function numBins = calculateBins(data)
