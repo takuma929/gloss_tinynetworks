@@ -4,7 +4,7 @@
 
 This repository contains the source code, example data, and scripts required to process behavioural and computational model data, and to generate all main and supplementary figures for the manuscript:
 
-**Takuma Morimoto, Arash Akbarinia, Katherine Storrs, Jacob R. Cheeseman, Hannah E. Smithson, Karl R. Gegenfurtner, and Roland W. Fleming**
+Takuma Morimoto, Arash Akbarinia, Katherine Storrs, Jacob R. Cheeseman, Hannah E. Smithson, Karl R. Gegenfurtner, and Roland W. Fleming
 "Human gloss perception reproduced by tiny neural networks."
 *bioRxiv*
 [https://doi.org/10.1101/2025.05.09.653112](https://doi.org/10.1101/2025.05.09.653112)
