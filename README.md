@@ -112,7 +112,7 @@ This code is distributed under the MIT License.
   The software processes behavioral and computational model response data, applies exclusion criteria, computes summary statistics, and generates all figures in the manuscript.
 
 * **Fundamental tasks:**
-  Raw data processing, model evaluation, analysis, and figure generation for publication.
+  Raw data processing, model evaluation, analysis, and figure generation for the manuscript.
 
 * **Algorithms and approach:**
   Standard psychophysical data processing, correlation analysis, kernel fitting, t-SNE visualization, and comparison of model predictions with human perception.
