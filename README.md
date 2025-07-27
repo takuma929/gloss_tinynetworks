@@ -54,13 +54,15 @@ To generate all figures and process the data as in the manuscript:
 
 1. Start MATLAB and navigate to the main project folder.
 
-2. Run the following command in the MATLAB Command Window:
+2. Add the main project folder and its subfolders to the MATLAB path.
+
+3. Run the following command in the MATLAB Command Window:
 
    ```
    main
    ```
 
-3. All figures will be saved to the `figs/` directory, and cleaned data files will be saved in the `data/` directory.
+4. All figures will be saved to the `figs/` directory, and cleaned data files will be saved in the `data/` directory.
 
 **Expected Output:**
 
