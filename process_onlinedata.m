@@ -33,10 +33,10 @@ warning('off', 'MATLAB:table:ModifiedAndSavedVarnames')
 %% ------------------- Load Experiment Parameters and Files ---------------------
 
 % Load table summarizing ground-truth for all stimuli and conditions
-table_gt = readtable(fullfile('data', 'onlineExp_condition_summary'),'VariableNamingRule', 'modify');
+table_gt = readtable(fullfile(pwd, 'data', 'onlineExp_condition_summary'),'VariableNamingRule', 'modify');
 
 % Get list of all data files starting with 'ID'
-files = dir(fullfile('onlineData', 'ID*'));
+files = dir(fullfile(pwd, 'onlineData', 'ID*'));
 nFiles = length(files);
 
 % Set up parameters for gloss computation
@@ -64,7 +64,7 @@ failedObsFileList = {};        % Filenames of failed observers
 
 for N = 1:nFiles
     fname = files(N).name;
-    table = readtable(fullfile('onlineData', fname),'VariableNamingRule', 'modify');
+    table = readtable(fullfile(pwd, 'onlineData', fname),'VariableNamingRule', 'modify');
     
     % Store basic metadata
     data(N).age        = table.age(1);
@@ -111,7 +111,7 @@ for N = 1:nFiles
     end
 
     % ---- Load ground-truth for 12 common images from previous experiment ----
-    load(fullfile('data', 'groundtruth_prev_exp'), 'GroundTruth');
+    load(fullfile(pwd, 'data', 'groundtruth_prev_exp'), 'GroundTruth');
     cnt_img = 0;
     for imgN = 3:3:38
         cnt_img = cnt_img + 1;
@@ -154,7 +154,7 @@ data = data(passdObsList);
 gt = gt(passdObsList);
 
 % Optionally save cleaned data
-fname = fullfile('data','onlineData.mat');
+fname = fullfile(pwd, 'data','onlineData.mat');
 save(fname, 'data', 'gt');
 disp(['Saved: ',fname])
 
