@@ -28,8 +28,8 @@ figp.twocolumn = 18.5;              % Standard two-column width
 figp.onecolumn = figp.twocolumn/2;  % Standard one-column width
 
 % Set font sizes for general text and axes
-figp.fontsize      = 6;   % General font size
-figp.fontsize_axis = 7;   % Axis label font size
+figp.fontsize      = 7;   % General font size
+figp.fontsize_axis = 8;   % Axis label font size
 
 % Set font name for all figures
 figp.fontname = 'Arial';
