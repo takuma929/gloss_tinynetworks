@@ -209,6 +209,16 @@ final_image = cat(1, final_blocks{:});
 figure; imshow(final_image); axis image off
 imwrite(final_image, fullfile('figs','fig2e(tiled_grid).png'));
 
+% display number of images per tiles
+n_imgs_bins = zeros(3,3);
+for i = 1:n_cell_rows
+    for j = 1:n_cell_cols
+        n_imgs_bins(4-i,j) = sum((human_bins==i&gt_bins==j));
+    end
+end
+disp('Number of images in each bin:')
+disp(n_imgs_bins)
+
 disp('Done.')
 close all
 
@@ -261,7 +271,9 @@ function fig_histogram(data, nbins, x_label, y_label, color, filename)
     h.EdgeColor = ones(3,1)*0.97;
     h.FaceColor = color;
     [~,peakid] = max(h.Values);
+    
     peakval = mean([h.BinEdges(peakid),h.BinEdges(peakid+1)]);
+
     ax = gca;
     fig.Units = 'centimeters';
     fig.Position = [10,10,figp.twocolumn/5,figp.twocolumn/4];
