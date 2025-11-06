@@ -1,6 +1,6 @@
 # Human Gloss Perception and Tiny Neural Networks: Figure Generation and Data Processing
 
-![Repository Thumbnail](thumbnail.png)
+![Repository Thumbnail](thumbnail.jpg)
 
 This repository contains the source code, example data, and scripts required to process behavioural and computational model data, and to generate all main and supplementary figures for the manuscript:
 
