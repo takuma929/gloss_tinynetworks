@@ -2,7 +2,7 @@
 % This script generates Figure 9b and related panels for the manuscript.
 % It visualizes gloss predictions for textured objects by:
 % - Creating tiled montages of low- and high-contrast example images,
-% - Loading and comparing predicted glossiness from single- and double-kernel models
+% - Loading and comparing Predicted glossiness from single- and double-kernel models
 %   (for both uniform and textured conditions),
 % - Plotting scatter plots of model predictions (with mean markers and formatting),
 % - Conduct and report statistical test,
@@ -16,7 +16,7 @@ clearvars; close all;
 
 disp('Generating figure 9...')
 
-load(fullfile('data', 'fig_parameters'))
+load(fullfile(pwd,'data', 'fig_parameters'))
 
 %% Save tiled images (low vs high contrast examples)
 indices = [200, 794, 1034, 1214, 1224, 1480];
@@ -30,10 +30,10 @@ gap = 5;
 tiled_image_lowcontrast  = generateTiledImageFromFiles(indices, tile_size, gap, w, h, img_folder_low);
 tiled_image_highcontrast = generateTiledImageFromFiles(indices, tile_size, gap, w, h, img_folder_high);
 
-imwrite(tiled_image_lowcontrast, fullfile('figs', 'fig9b(imgs_lowcontrast).png'));
-imwrite(tiled_image_highcontrast, fullfile('figs', 'fig9b(imgs_highcontrast).png'));
+imwrite(tiled_image_lowcontrast, fullfile('figs', 'figS9b(imgs_lowcontrast).png'));
+imwrite(tiled_image_highcontrast, fullfile('figs', 'figS9b(imgs_highcontrast).png'));
 
-%% Scatter plot: predicted glossiness (uniform vs. textured)
+%% Scatter plot: Predicted glossiness (uniform vs. textured)
 cont_list.singlekernel = {'lowcontrast', 'highcontrast'};
 cont_list.doublekernel = {'highcontrast'};
 
@@ -50,6 +50,9 @@ for model = {'singlekernel', 'doublekernel'}
         % Compute MAE between uniform and textured
         MAE_uniform_vs_textured = abs(T.textured - T.uniform);
         MAE_all.(model{1}).(cont{1}) = MAE_uniform_vs_textured;
+        
+        corr_uniform_vs_textured = corr2(T.textured,T.uniform);
+        corr_all.(model{1}).(cont{1}) = corr_uniform_vs_textured;
         
         % For info: mean, std, N
         mean_MAE = mean(MAE_uniform_vs_textured);
@@ -96,9 +99,9 @@ for model = {'singlekernel', 'doublekernel'}
         grid off
         box off
         if strcmp(model{1},'singlekernel')
-            filename = sprintf('fig9b(scatter_singlekernel_%s).pdf', cont{1});
+            filename = sprintf('figS9b(scatter_singlekernel_%s).pdf', cont{1});
         elseif strcmp(model{1},'doublekernel')
-            filename = sprintf('fig9e(scatter_doublekernel_%s).pdf', cont{1});
+            filename = sprintf('figS9e(scatter_doublekernel_%s).pdf', cont{1});
         end
         exportgraphics(fig, fullfile('figs', filename), 'ContentType', 'vector')
     end
@@ -139,7 +142,6 @@ end
 
 disp('Done.')
 close all
-
 
 %% Function: Generate tiled image from file indices
 function tiled_image = generateTiledImageFromFiles(indices, tile_size, gap, w, h, img_folder)
