@@ -48,7 +48,7 @@ fig4c_4d_S7bc_S9c_analyze_kernel % generate figure 4c, 4d, S7b, S7c and S9c
 
 fig4g_1kernel_fittingResults  % generate figure 4g
 
-fig4i_region_of_max_activation　% generate figure 4i
+fig4i_region_of_max_activation % generate figure 4i
 
 fit_kernel_gauss_ridges % perform fitting for 24 kernels from one-layer models
 
