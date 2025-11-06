@@ -35,7 +35,7 @@ w = 6; h = 6; % grid dimensions (6x6 = 36)
 s = size(I.lightprobe);
 
 out.lightprobe = reshape(permute(reshape(I.lightprobe, [s(1), s(2), s(3), w, h]), [1 5 2 4 3]), [s(1)*h, s(2)*w, s(3)]);
-imwrite(out.lightprobe, fullfile('figs', 'figS2b(thumbnail_lighting).png'));
+imwrite(out.lightprobe, fullfile('figs', 'figS3a(thumbnail_lighting).png'));
 imshow(out.lightprobe);pause(2);
 close all
 
