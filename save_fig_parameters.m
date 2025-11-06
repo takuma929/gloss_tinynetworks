@@ -19,8 +19,8 @@ clearvars; close all;
 disp('Saving figure parameters...')
 
 % Create directories for saving figures and data if they do not already exist
-if ~exist(pwd,'figs', 'dir')
-    mkdir(pwd,'figs')
+if ~exist(fullfile(pwd,'figs','dir'))
+    mkdir(fullfile(pwd,'figs'))
 end
 
 % Set figure width (in centimeters) for two-column and one-column formats
