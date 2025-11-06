@@ -14,7 +14,7 @@
 %% Clear workspace
 clearvars; close all;
 
-disp('Generating figure 9...')
+disp('Generating figure S9...')
 
 load(fullfile(pwd,'data', 'fig_parameters'))
 

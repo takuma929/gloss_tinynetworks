@@ -11,7 +11,7 @@
 %% Clean workspace and load data
 clearvars; close all;
 
-disp('Generating figure S5...')
+disp('Generating figure S8...')
 
 % Load figure parameters and correlation data
 load(fullfile('data', 'fig_parameters'))
@@ -82,7 +82,7 @@ for area = {'onelayer', 'threelayer'}
     box off
 
     % Export to PDF
-    exportgraphics(fig, fullfile('figs', ['figS5(bgvsnobg_', area{1}, ').pdf']), ...
+    exportgraphics(fig, fullfile('figs', ['figS8(bgvsnobg_', area{1}, ').pdf']), ...
         'ContentType', 'vector');
 end
 

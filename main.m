@@ -44,13 +44,13 @@ fig3_model_comparison % generate figure 3
 
 fig4b_24kernels % generate figure 4b
 
-fig4c_4d_9c_analyze_kernel % generate figure 4c, 4d and 9c
+fig4c_4d_S7bc_S9c_analyze_kernel % generate figure 4c, 4d, S7b, S7c and S9c
 
-fig4e_1kernel_fittingResults  % generate figure 4e
+fig4g_1kernel_fittingResults  % generate figure 4g
 
 fit_kernel_gauss_ridges % perform fitting for 24 kernels from one-layer models
 
-fig4f_24kernel_fittingResults % generate figure 4f
+fig4h_24kernel_fittingResults % generate figure 4h
 
 fig5b_tSNEplot % generate figure 5b
 
@@ -60,16 +60,18 @@ fig7_Serrano_dataset % generate figure 7
 
 fig8_real_photographs % generate figure 8
 
-fig9_texture_objects % generate figure 9
+figS2ANDS3_make_thumbnails % generate figure S2 and S3a (thumbnail)
 
-figS1_lighting_colordistribution % generate figure S1 (color distribution)
+figS3b_lighting_colordistribution % generate figure S3b (color distribution)
 
-figS1_make_thumbnails % generate figure S1 (thumbnail)
+figS4AND5_scatter_lighting_shape % generate figure S4 and S5
 
-figS2AND3_scatter_lighting_shape % generate figure S2 and S3
+figS6_offlinevsonline % generate figure S6
 
-figS4_offlinevsonline % generate figure S4
+figS7a_24kernels_groundtruth % generate figure S7a
 
-figS5_effect_background % generate figure S5
+figS8_effect_background % generate figure S8
+
+figS9_texture_objects % generate figure S9
 
 toc
