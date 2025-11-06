@@ -13,21 +13,23 @@
 
 clearvars;close all;clc % cleaning
 
-disp('Generating figure 4c, 4d and 9c...')
+disp('Generating figure 4c, 4d, S7bc and S9c...')
 
 load(fullfile('data','fig_parameters'))
 
 %%
-%for type = {'original','gamut_rotation','texture'}
-for kernel_type = {'original','gamut_rotation','texture'}
+for kernel_type = {'original','gamut_rotation','texture','lighting_elevation_shift_45deg','lighting_elevation_shift_90deg','lighting_rotation_45deg','object_rotation_90deg','object_rotation_45deg','lighting_rotation_90deg'}
+%for kernel_type = {'texture'}
     % kernel directory
     switch kernel_type{1}
         case 'original'
-            kernel_dir = fullfile('data','networks','human_onelayer_kernelN1_trainedby3888imgs');
+            kernel_dir = fullfile(pwd,'data','networks','human_onelayer_kernelN1_trainedby3888imgs');
         case 'gamut_rotation'
-            kernel_dir = fullfile('data','networks','human_oneLayer_kernelN1_trainedby3888imgs_gamut_rotation');
+            kernel_dir = fullfile(pwd,'data','networks','human_oneLayer_kernelN1_trainedby3888imgs_gamut_rotation');
         case 'texture'
-            kernel_dir = fullfile('data','networks','human_onelayer_kernelN2_trainedbytexturedimgs');
+            kernel_dir = fullfile(pwd,'data','networks','human_onelayer_kernelN2_trainedbytexturedimgs');
+        otherwise
+            kernel_dir = fullfile(pwd,'data','networks',['human_onelayer_kernelN1_',kernel_type{1}]);
     end
     
     % loading kernel
@@ -38,21 +40,25 @@ for kernel_type = {'original','gamut_rotation','texture'}
     mean_rgb = [0.516186453743370, 0.4989957, 0.455484868501618];
     std_rgb = [0.231457708997510, 0.222412810219355, 0.235527730404435];
     fig = figure;
-    if ~strcmp(kernel_type{1},'texture')
+    if contains(kernel_type{1},'object') || contains(kernel_type{1},'lighting')
         kernel = (I_kernel-min(I_kernel(:)))/max(max(max(I_kernel-min(I_kernel(:)))));
         imagesc(kernel);axis square;axis off;
-        print(fig, fullfile('figs',['fig4c(',kernel_type{1},').pdf']), '-dpdf', '-fillpage')
+        print(fig, fullfile('figs',['figS7bc(',kernel_type{1},').pdf']), '-dpdf', '-fillpage')
+    elseif ~strcmp(kernel_type{1},'texture')
+        kernel = (I_kernel-min(I_kernel(:)))/max(max(max(I_kernel-min(I_kernel(:)))));
+        imagesc(kernel);axis square;axis off;
+        print(fig, fullfile('figs',['fig4cd(',kernel_type{1},').pdf']), '-dpdf', '-fillpage')
     elseif strcmp(kernel_type{1},'texture')
         for kernelN = 1:size(I_kernel,4)
             I_kernel_N = I_kernel(:,:,:,kernelN);
             kernel = (I_kernel_N-min(I_kernel_N(:)))/max(max(max(I_kernel_N-min(I_kernel_N(:)))));
             imagesc(kernel);axis square;axis off;
-            print(fig, fullfile('figs',['fig9c(',kernel_type{1},'_kernelN',num2str(kernelN),').pdf']), '-dpdf', '-fillpage')
+            print(fig, fullfile('figs',['figS9c(',kernel_type{1},'_kernelN',num2str(kernelN),').pdf']), '-dpdf', '-fillpage')
         end
     end
 
     %% Compute daylight color
-    if ~strcmp(kernel_type{1},'texture') 
+    if strcmp(kernel_type{1},'original') || strcmp(kernel_type{1},'gamut_rotation')
 
         wp_d65 = [0.95047 1 1.08883];
         

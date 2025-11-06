@@ -13,7 +13,7 @@
 %% Clear workspace
 clearvars; close all;
 
-disp('Generating figure S2 and S3...')
+disp('Generating figure S4 and S5...')
 
 %% Load data
 load(fullfile('data','fig_parameters'))
@@ -90,7 +90,7 @@ end
 %% Save lightprobe group image
 [~, rankN.lightprobe] = sort(corrCoeff_gtvshuman.lightprobe, 'descend');
 out.lightprobe = assembleGroupImage('lightprobe', 2, rankN.lightprobe, 6, 6);
-imwrite(out.lightprobe, fullfile('figs', 'figS2(scatter_humanvsgt_groupedbylighting).png'))
+imwrite(out.lightprobe, fullfile('figs', 'figS4(scatter_humanvsgt_groupedbylighting).png'))
 
 %% Scatter plots: Human vs GT grouped by shape
 for objN = 1:36
@@ -129,7 +129,7 @@ end
 %% Save shape group image
 [~, rankN.shape] = sort(corrCoeff_gtvshuman.shape, 'descend');
 out.shape = assembleGroupImage('shape', 3, rankN.shape, 6, 6);
-imwrite(out.shape, './figs/figS3(scatter_humanvsgt_groupedbyshape).png');
+imwrite(out.shape, './figs/figS5(scatter_humanvsgt_groupedbyshape).png');
 
 %% save rank information
 save(fullfile('data','rankN_lightprobeANDshape'),'rankN')

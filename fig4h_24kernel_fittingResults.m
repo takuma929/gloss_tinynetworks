@@ -13,7 +13,7 @@
 %--------------------------------------------------------------------------
 clearvars; close all;
 
-disp('Generating figure 4f...')
+disp('Generating figure 4h...')
 
 %% Load configuration
 load(fullfile('data','fig_parameters'))  % Loads `fontsize`, `twocolumn`, etc.
@@ -164,7 +164,7 @@ for param = {'amp','sxsy','aR1aR2','sR1sR2','pR1pR2'}
     box off;
 
     % Save figure
-    exportgraphics(fig, fullfile('figs', ['fig4f(kernel24_', pname, ').pdf']), 'ContentType', 'vector');
+    exportgraphics(fig, fullfile('figs', ['fig4h(kernel24_', pname, ').pdf']), 'ContentType', 'vector');
 end
 
 disp('Done.')

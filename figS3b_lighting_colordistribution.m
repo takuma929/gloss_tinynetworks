@@ -13,7 +13,7 @@
 %% Clear workspace
 clearvars; close all;
 
-disp('Generating figure S1...')
+disp('Generating figure S3b...')
 
 load(fullfile('data', 'fig_parameters'))
 load(fullfile('data', 'humanANDgt_Pellacini_c'))
@@ -113,7 +113,7 @@ s = size(I);
 I2 = reshape(permute(reshape(I, [s(1), s(2), s(3), 6, 6]), [1 5 2 4 3]), [s(1)*6, s(2)*6, 3]);
 
 imshow(uint8(I2))
-imwrite(uint8(I2), fullfile('figs', 'figS1c(lightprobe_chromaticdistribution).png'))
+imwrite(uint8(I2), fullfile('figs', 'figS3b(lightprobe_chromaticdistribution).png'))
 
 disp('Done.')
 close all

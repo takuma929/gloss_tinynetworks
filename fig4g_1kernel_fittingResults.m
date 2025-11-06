@@ -8,7 +8,7 @@
 %--------------------------------------------------------------------------
 clearvars; close all;
 
-disp('Generating figure 4e...')
+disp('Generating figure 4g...')
 
 %% Parameters
 show_colorbar = false;  % Set to false to hide all colorbars
@@ -104,7 +104,7 @@ for type = {'ridge1', 'ridge2', 'gauss', 'original', 'residual'}
     if show_colorbar
         colorbar;
     end
-    saveas(gca, fullfile('figs', ['fig4e_', type{1}, '.png']));
+    saveas(gca, fullfile('figs', ['fig4g_', type{1}, '.png']));
 end
 
 disp('Done.')

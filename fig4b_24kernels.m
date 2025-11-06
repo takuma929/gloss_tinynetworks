@@ -18,8 +18,8 @@ disp('Generating figure 4b...')
 cnt = 0;
 
 % create a folder
-if ~exist(fullfile('figs', 'onelayer_kernel'),'file')
-    mkdir(fullfile('figs', 'onelayer_kernel'))
+if ~exist(fullfile(pwd,'figs', 'onelayer_kernel'),'file')
+    mkdir(fullfile(pwd,'figs', 'onelayer_kernel'))
 end
     
 for type = {'lighting', 'shape'}

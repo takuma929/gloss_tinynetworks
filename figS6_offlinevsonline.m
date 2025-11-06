@@ -13,7 +13,7 @@
 %% Clear workspace
 clearvars; close all;
 
-disp('Generating figure S4...')
+disp('Generating figure S6...')
 
 %% Load data
 load(fullfile('data','onlineData'))
@@ -141,7 +141,7 @@ for group = {'group1', 'group2'}
     fig.Position = [10, 10, figp.twocolumn/4, figp.twocolumn/4];
     fig.Color = 'w'; fig.InvertHardcopy = 'off';
 
-    exportgraphics(fig, fullfile('figs', ['figS4a(scatter_offlinevsonline_', group{1}, ').pdf']), 'ContentType', 'vector')
+    exportgraphics(fig, fullfile('figs', ['figS6a(scatter_offlinevsonline_', group{1}, ').pdf']), 'ContentType', 'vector')
 end
 
 %% Histogram plots
@@ -152,12 +152,12 @@ for group = {'group1','group2'}
     fig_histogram(corrCoeff.offlinevsonline.(group{1}), ...
         calculateBins(corrCoeff.offlinevsonline.(group{1})), ...
         'Corr. lab vs. online', 'Frequency', gray, ...
-        fullfile('figs', ['figS4b(hist_offlinevsonline', group{1}, ').pdf']));
+        fullfile('figs', ['figS6b(hist_offlinevsonline', group{1}, ').pdf']));
 end
 
 fig_histogram(corrCoeff.withinObs, 30, ...
     'Corr. within obs', 'Frequency', gray, ...
-    fullfile('figs','figS4c(hist_offline_withinObs).pdf'))
+    fullfile('figs','figS6c(hist_offline_withinObs).pdf'))
 
 disp('Done.')
 close all
