@@ -19,8 +19,8 @@ clearvars; close all;
 disp('Saving figure parameters...')
 
 % Create directories for saving figures and data if they do not already exist
-if ~exist('figs', 'dir')
-    mkdir('figs')
+if ~exist(pwd,'figs', 'dir')
+    mkdir(pwd,'figs')
 end
 
 % Set figure width (in centimeters) for two-column and one-column formats
@@ -35,6 +35,6 @@ figp.fontsize_axis = 8;   % Axis label font size
 figp.fontname = 'Arial';
 
 % Save the figure parameter structure for use in other scripts
-save(fullfile('data','fig_parameters'), 'figp')
+save(fullfile(pwd,'data','fig_parameters'), 'figp')
 
 disp('Done.')
