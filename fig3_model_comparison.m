@@ -280,3 +280,156 @@ exportgraphics(fig,fullfile('figs','fig3(model_comparison).pdf'),'ContentType','
 
 disp('Done.')
 close all
+
+
+
+%% ============================================================
+%  Stats tests (24 paired correlations)
+%  (1) Multi-reg (all luminance stats) vs mean luminance only
+%  (2) Multi-reg (contrast+coverage+sharpness) vs sub-band contrast only
+%% ============================================================
+
+alpha = 0.05; % 95% CI
+
+% --- Helper: find mean-luminance model row in corrCoeff_imgStats.label ---
+labels = corrCoeff_imgStats.label;
+if iscell(labels); labels_lower = lower(string(labels));
+else;             labels_lower = lower(string(labels(:)));
+end
+
+idx_meanlum = find(contains(labels_lower, "mean"), 1, 'first');
+
+if isempty(idx_meanlum)
+    idx_meanlum = find(contains(labels_lower, "luminance"), 1, 'first');
+end
+if isempty(idx_meanlum)
+    error('Could not identify the mean-luminance model in corrCoeff_imgStats.label. Please check label strings.');
+end
+
+% --- Extract 24 correlations to human observers ---
+% (A) Multi-reg model integrating all luminance stats
+y_lum_multi = corrCoeff_imgStats_multiRegression.humanvsmodel(:);
+
+% (B) Mean luminance-only model (single predictor)
+y_meanlum = corrCoeff_imgStats.humanvsmodel(idx_meanlum, :).';
+
+if numel(y_lum_multi) ~= numel(y_meanlum)
+    error('Size mismatch: multi-reg luminance (%d) vs mean-luminance (%d).', numel(y_lum_multi), numel(y_meanlum));
+end
+
+y_lum_multi = abs(y_lum_multi);
+y_meanlum   = abs(y_meanlum);
+
+% --- Paired t-test + Cohen's dz + CI(dz) ---
+diff_lum = y_lum_multi - y_meanlum;
+[~, p_lum, ~, stats_lum] = ttest(diff_lum, 0, 'Alpha', alpha, 'Tail', 'both');
+
+n_lum  = numel(diff_lum);
+df_lum = stats_lum.df;
+t_lum  = stats_lum.tstat;
+
+dz_lum = mean(diff_lum) / std(diff_lum);  % paired dz
+[deltaL_lum, deltaU_lum] = local_nct_delta_ci(t_lum, df_lum, alpha);
+dzL_lum = deltaL_lum / sqrt(n_lum);
+dzU_lum = deltaU_lum / sqrt(n_lum);
+
+% ------------------------------------------------
+% (2) Specular: multi-reg (contrast+coverage+sharpness) vs contrast-only
+% ------------------------------------------------
+% Multi-reg specular model already loaded above:
+%   corrCoeff_specularMetrics_multiRegression.humanvsmodel
+
+y_spec_multi = corrCoeff_specularMetrics_multiRegression.humanvsmodel(:);
+
+% Contrast-only model (from corrCoeff_specularMetrics)
+y_contrast = corrCoeff_specularMetrics.human.contrast(:);
+
+% Ensure lengths match
+if numel(y_spec_multi) ~= numel(y_contrast)
+    error('Size mismatch: multi-reg specular (%d) vs contrast-only (%d).', numel(y_spec_multi), numel(y_contrast));
+end
+
+y_spec_multi = abs(y_spec_multi);
+y_contrast   = abs(y_contrast);
+
+diff_spec = y_spec_multi - y_contrast;
+[~, p_spec, ~, stats_spec] = ttest(diff_spec, 0, 'Alpha', alpha, 'Tail', 'both');
+
+n_spec  = numel(diff_spec);
+df_spec = stats_spec.df;
+t_spec  = stats_spec.tstat;
+
+dz_spec = mean(diff_spec) / std(diff_spec);
+[deltaL_spec, deltaU_spec] = local_nct_delta_ci(t_spec, df_spec, alpha);
+dzL_spec = deltaL_spec / sqrt(n_spec);
+dzU_spec = deltaU_spec / sqrt(n_spec);
+
+% -----------------------------
+% Print full stats
+% -----------------------------
+fprintf('\n=== Requested paired comparisons (n = %d patterns) ===\n', n_lum);
+
+fprintf('\n(1) All luminance stats (multi-reg) vs mean luminance-only:\n');
+if p_lum < 1e-3
+    fprintf('t(%d) = %.2f, p < 0.001, Cohen''s dz = %.3f, 95%% CI [%.3f, %.3f]\n', ...
+        df_lum, t_lum, dz_lum, dzL_lum, dzU_lum);
+else
+    fprintf('t(%d) = %.2f, p = %.3f, Cohen''s dz = %.3f, 95%% CI [%.3f, %.3f]\n', ...
+        df_lum, t_lum, p_lum, dz_lum, dzL_lum, dzU_lum);
+end
+
+fprintf('\n(2) All specular stats (multi-reg: contrast+coverage+sharpness) vs contrast-only:\n');
+if p_spec < 1e-3
+    fprintf('t(%d) = %.2f, p < 0.001, Cohen''s dz = %.3f, 95%% CI [%.3f, %.3f]\n', ...
+        df_spec, t_spec, dz_spec, dzL_spec, dzU_spec);
+else
+    fprintf('t(%d) = %.2f, p = %.3f, Cohen''s dz = %.3f, 95%% CI [%.3f, %.3f]\n', ...
+        df_spec, t_spec, p_spec, dz_spec, dzL_spec, dzU_spec);
+end
+
+
+%% ============================================================
+% Local functions
+%% ============================================================
+function [deltaL, deltaU] = local_nct_delta_ci(tObs, df, alpha)
+
+% Solve:
+%   nctcdf(tObs; df, deltaL) = 1 - alpha/2
+%   nctcdf(tObs; df, deltaU) = alpha/2
+
+    targetL = 1 - alpha/2;  % 0.975
+    targetU = alpha/2;      % 0.025
+
+    deltaL = local_solve_delta(tObs, df, targetL);
+    deltaU = local_solve_delta(tObs, df, targetU);
+
+    if deltaL > deltaU
+        tmp = deltaL; deltaL = deltaU; deltaU = tmp;
+    end
+end
+
+function delta = local_solve_delta(tObs, df, target)
+% Solve nctcdf(tObs; df, delta) = target for delta using bracketing + fzero.
+
+    fun = @(d) nctcdf(tObs, df, d) - target;
+
+    lo = -1e4; hi = 1e4;
+    flo = fun(lo); fhi = fun(hi);
+
+    iter = 0;
+    while sign(flo) == sign(fhi) && iter < 50
+        lo = lo * 2;
+        hi = hi * 2;
+        flo = fun(lo);
+        fhi = fun(hi);
+        iter = iter + 1;
+    end
+
+    if sign(flo) == sign(fhi)
+        % best-effort fallback (rare)
+        delta = tObs;
+        return;
+    end
+
+    delta = fzero(fun, [lo, hi]);
+end

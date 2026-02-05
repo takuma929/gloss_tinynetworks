@@ -88,31 +88,138 @@ end
 
 
 %% Statistical comparison: background vs. no-background
+% Report:
+% - two-sided paired t-test: t(df)=..., p=...
+% - Cohen's dz for paired differences: dz = mean(diff)/std(diff)
+% - 95% CI for Cohen's dz (via noncentral t inversion)
+%
+% Notes:
+% - CI reported below is for effect size dz (NOT for mean difference).
+% - If you also want CI of mean diff, keep ci_* from ttest as well.
 
+alpha = 0.05;   % 95% CI
+
+% -----------------------------
 % Three-layer
-bg_vals_two = mean(corr_bg.threelayer.human, 2);
+% -----------------------------
+bg_vals_two   = mean(corr_bg.threelayer.human, 2);
 nobg_vals_two = mean(corr_nobg.threelayer.human, 2);
-[h_two, p_two, ci_two, stats_two] = ttest(bg_vals_two, nobg_vals_two, 'tail', 'both');
 diff_two = bg_vals_two - nobg_vals_two;
-d_two = mean(diff_two) / std(diff_two);
 
+% Paired t-test
+[~, p_two, ~, stats_two] = ttest(diff_two, 0, 'Alpha', alpha, 'Tail', 'both');
+
+n_two  = numel(diff_two);
+df_two = stats_two.df;
+t_two  = stats_two.tstat;
+
+% Cohen's dz
+dz_two = mean(diff_two) / std(diff_two);   % same as t/sqrt(n) up to rounding
+
+% 95% CI for Cohen's dz via noncentral t inversion
+[deltaL_two, deltaU_two] = local_nct_delta_ci(t_two, df_two, alpha);
+dzL_two = deltaL_two / sqrt(n_two);
+dzU_two = deltaU_two / sqrt(n_two);
+
+% -----------------------------
 % One-layer
-bg_vals_one = mean(corr_bg.onelayer.human, 2);
+% -----------------------------
+bg_vals_one   = mean(corr_bg.onelayer.human, 2);
 nobg_vals_one = mean(corr_nobg.onelayer.human, 2);
-[h_one, p_one, ci_one, stats_one] = ttest(bg_vals_one, nobg_vals_one, 'tail', 'both');
 diff_one = bg_vals_one - nobg_vals_one;
-d_one = mean(diff_one) / std(diff_one);
 
-% Display results
-disp('--- Three-layer stats ---');
-disp(stats_two)
-disp(['p = ', num2str(p_two)])
-disp(['Cohen''s d = ', num2str(d_two)])
+% Paired t-test
+[~, p_one, ~, stats_one] = ttest(diff_one, 0, 'Alpha', alpha, 'Tail', 'both');
 
-disp('--- One-layer stats ---');
-disp(stats_one)
-disp(['p = ', num2str(p_one)])
-disp(['Cohen''s d = ', num2str(d_one)])
+n_one  = numel(diff_one);
+df_one = stats_one.df;
+t_one  = stats_one.tstat;
 
-disp('Done.')
+% Cohen's dz
+dz_one = mean(diff_one) / std(diff_one);
+
+% 95% CI for Cohen's dz via noncentral t inversion
+[deltaL_one, deltaU_one] = local_nct_delta_ci(t_one, df_one, alpha);
+dzL_one = deltaL_one / sqrt(n_one);
+dzU_one = deltaU_one / sqrt(n_one);
+
+% -----------------------------
+% Display results (Nature-ish formatting)
+% -----------------------------
+fprintf('--- Three-layer stats ---\n');
+fprintf('t(%d) = %.2f, p = %.3f, Cohen''s dz = %.3f, 95%% CI [%.3f, %.3f]\n', ...
+    df_two, t_two, p_two, dz_two, dzL_two, dzU_two);
+
+fprintf('--- One-layer stats ---\n');
+fprintf('t(%d) = %.2f, p = %.3f, Cohen''s dz = %.3f, 95%% CI [%.3f, %.3f]\n', ...
+    df_one, t_one, p_one, dz_one, dzL_one, dzU_one);
+
+fprintf('Done.\n');
 close all
+
+
+% ========================================================================
+% Local function (must be at end of script file in MATLAB)
+% ========================================================================
+function [deltaL, deltaU] = local_nct_delta_ci(tObs, df, alpha)
+% Returns 100*(1-alpha)% CI for the noncentrality parameter (delta)
+% of a noncentral t distribution, inverted from the observed t statistic.
+%
+% We solve:
+%   nctcdf(tObs; df, deltaL) = 1 - alpha/2
+%   nctcdf(tObs; df, deltaU) = alpha/2
+%
+% This matches the usual inversion for a two-sided CI.
+
+    if exist('nctcdf','file') ~= 2
+        error('nctcdf not found. Requires Statistics and Machine Learning Toolbox.');
+    end
+
+    targetL = 1 - alpha/2;  % 0.975
+    targetU = alpha/2;      % 0.025
+
+    % Monotonicity: nctcdf(tObs, df, delta) decreases as delta increases.
+    % So deltaL < deltaU typically, but for safety we'll bracket separately.
+
+    % Solve for deltaL where CDF = 0.975 (smaller delta)
+    deltaL = local_solve_delta(tObs, df, targetL);
+
+    % Solve for deltaU where CDF = 0.025 (larger delta)
+    deltaU = local_solve_delta(tObs, df, targetU);
+
+    % Ensure ordering
+    if deltaL > deltaU
+        tmp = deltaL; deltaL = deltaU; deltaU = tmp;
+    end
+end
+
+function delta = local_solve_delta(tObs, df, target)
+% Solve nctcdf(tObs; df, delta) = target for delta, using bracketing + fzero.
+
+    fun = @(d) nctcdf(tObs, df, d) - target;
+
+    % Start bracket around observed delta ~ tObs (roughly)
+    lo = -1e4;
+    hi =  1e4;
+
+    flo = fun(lo);
+    fhi = fun(hi);
+
+    % Expand bracket if needed (rare, but safe)
+    iter = 0;
+    while sign(flo) == sign(fhi) && iter < 50
+        lo = lo * 2;
+        hi = hi * 2;
+        flo = fun(lo);
+        fhi = fun(hi);
+        iter = iter + 1;
+    end
+
+    if sign(flo) == sign(fhi)
+        % Best-effort fallback if bracketing fails
+        delta = tObs;
+        return;
+    end
+
+    delta = fzero(fun, [lo, hi]);
+end
