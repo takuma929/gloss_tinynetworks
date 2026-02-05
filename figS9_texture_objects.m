@@ -117,31 +117,71 @@ diff_vals = MAE_double - MAE_single;
 [h_norm, p_norm] = lillietest(diff_vals);
 
 fprintf('\n--- MAE Comparison between models (highcontrast) ---\n');
-if h_norm
+
+% We expect non-normal differences (h_norm == 1), so default to Wilcoxon.
+if h_norm == 1
     fprintf('Normality test for difference: NOT normal (Lilliefors p = %.4g)\n', p_norm);
+
     % Wilcoxon signed-rank test (one-sided: doublekernel < singlekernel)
-    [p_wil, h_wil, stats_wil] = signrank(MAE_double, MAE_single, 'tail', 'left');
-    % Effect size (r = z / sqrt(n))
-    z_val = stats_wil.zval;
+    [p_wil, ~, stats_wil] = signrank(MAE_double, MAE_single, 'tail', 'left');
+
     n = numel(diff_vals);
+
+    % Effect size r for Wilcoxon: r = z / sqrt(n)
+    z_val = stats_wil.zval;
     r = z_val / sqrt(n);
+
+    % 95% CI for r via bootstrap over paired differences
+    alpha = 0.05;
+    B = 5000;                 % bootstrap samples
+    rng(1);                   % reproducible
+    r_boot = nan(B,1);
+
+    for b = 1:B
+        idx = randi(n, n, 1);                 % resample pairs (via diffs)
+        d_b = diff_vals(idx);
+        % one-sided signed-rank on resampled diffs against 0
+        [~, ~, st_b] = signrank(d_b, 0, 'tail', 'left');
+        r_boot(b) = st_b.zval / sqrt(n);
+    end
+
+    r_ci = prctile(r_boot, [100*alpha/2, 100*(1-alpha/2)]);
+
     fprintf(['Wilcoxon signed-rank test (doublekernel < singlekernel): ' ...
-        'z = %.3f, p = %.4g, effect size r = %.3f, n = %d\n'], ...
-        z_val, p_wil, r, n);
+             'z = %.3f, p = %.4g, effect size r = %.3f, 95%% CI [%.3f, %.3f], n = %d\n'], ...
+             z_val, p_wil, r, r_ci(1), r_ci(2), n);
+
 else
+    % Fallback: if normal, use paired t-test + dz CI
     fprintf('Normality test for difference: normal (Lilliefors p = %.4g)\n', p_norm);
-    [~, p, ci, stats] = ttest(MAE_double, MAE_single, 'Tail', 'left');
+
+    % Paired one-sided t-test (doublekernel < singlekernel)
+    [~, p, ~, stats] = ttest(MAE_double, MAE_single, 'Tail', 'left');
+
+    % Two-sided CI for mean difference
     [~, ~, ci_two, ~] = ttest(MAE_double, MAE_single, 'Tail', 'both');
-    df = stats.df;
+
+    df    = stats.df;
     tstat = stats.tstat;
-    d = mean(diff_vals) / std(diff_vals);
-    fprintf('Paired one-sided t-test (doublekernel < singlekernel): t(%d) = %.3f, p = %.4g, Cohen''s d = %.3f\n', ...
-        df, tstat, p, d);
+
+    % Effect size (paired): Cohen's dz
+    n = numel(diff_vals);
+    dz = tstat / sqrt(n);
+
+    % 95% CI for Cohen's dz via noncentral t inversion
+    alpha = 0.05;
+    [deltaL, deltaU] = local_nct_delta_ci(tstat, df, alpha);
+    dzL = deltaL / sqrt(n);
+    dzU = deltaU / sqrt(n);
+
+    fprintf('Paired one-sided t-test (doublekernel < singlekernel): t(%d) = %.3f, p = %.4g, Cohen''s dz = %.3f, 95%% CI [%.3f, %.3f]\n', ...
+        df, tstat, p, dz, dzL, dzU);
     fprintf('95%% CI for mean difference: [%.4f, %.4f]\n', ci_two(1), ci_two(2));
 end
 
 disp('Done.')
 close all
+
 
 %% Function: Generate tiled image from file indices
 function tiled_image = generateTiledImageFromFiles(indices, tile_size, gap, w, h, img_folder)
@@ -184,4 +224,50 @@ function tiled_image = generateTiledImageFromFiles(indices, tile_size, gap, w, h
                         col_start:col_start+tile_size-1, :) = tiles{idx};
         end
     end
+end
+
+
+function [deltaL, deltaU] = local_nct_delta_ci(tObs, df, alpha)
+% 100*(1-alpha)% CI for the noncentrality parameter (delta) of a noncentral t,
+% inverted from observed tObs (two-sided).
+
+    if exist('nctcdf','file') ~= 2
+        error('nctcdf not found. Requires Statistics and Machine Learning Toolbox.');
+    end
+
+    targetL = 1 - alpha/2;  % 0.975
+    targetU = alpha/2;      % 0.025
+
+    deltaL = local_solve_delta(tObs, df, targetL);
+    deltaU = local_solve_delta(tObs, df, targetU);
+
+    if deltaL > deltaU
+        tmp = deltaL; deltaL = deltaU; deltaU = tmp;
+    end
+end
+
+function delta = local_solve_delta(tObs, df, target)
+% Solve nctcdf(tObs; df, delta) = target using bracketing + fzero.
+
+    fun = @(d) nctcdf(tObs, df, d) - target;
+
+    lo = -1e4; hi = 1e4;
+    flo = fun(lo); fhi = fun(hi);
+
+    iter = 0;
+    while sign(flo) == sign(fhi) && iter < 50
+        lo = lo * 2;
+        hi = hi * 2;
+        flo = fun(lo);
+        fhi = fun(hi);
+        iter = iter + 1;
+    end
+
+    if sign(flo) == sign(fhi)
+        % Best-effort fallback (rare)
+        delta = tObs;
+        return;
+    end
+
+    delta = fzero(fun, [lo, hi]);
 end
