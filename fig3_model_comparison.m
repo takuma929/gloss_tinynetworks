@@ -284,21 +284,27 @@ close all
 
 
 %% ============================================================
-%  Stats tests (24 paired correlations)
+%  Stats tests (24 paired correlations; correlation to human responses)
 %  (1) Multi-reg (all luminance stats) vs mean luminance only
 %  (2) Multi-reg (contrast+coverage+sharpness) vs sub-band contrast only
+%  (3) One-layer (1 kernel) vs Three-layer (64 kernels)
 %% ============================================================
 
 alpha = 0.05; % 95% CI
 
 % --- Helper: find mean-luminance model row in corrCoeff_imgStats.label ---
 labels = corrCoeff_imgStats.label;
-if iscell(labels); labels_lower = lower(string(labels));
-else;             labels_lower = lower(string(labels(:)));
+if iscell(labels)
+    labels_lower = lower(string(labels));
+else
+    labels_lower = lower(string(labels(:)));
 end
 
+% Prefer label containing both "mean" and "lum"
 idx_meanlum = find(contains(labels_lower, "mean"), 1, 'first');
-
+if isempty(idx_meanlum)
+    idx_meanlum = find(contains(labels_lower, "mean luminance"), 1, 'first');
+end
 if isempty(idx_meanlum)
     idx_meanlum = find(contains(labels_lower, "luminance"), 1, 'first');
 end
@@ -306,12 +312,12 @@ if isempty(idx_meanlum)
     error('Could not identify the mean-luminance model in corrCoeff_imgStats.label. Please check label strings.');
 end
 
-% --- Extract 24 correlations to human observers ---
-% (A) Multi-reg model integrating all luminance stats
+% ============================================================
+% (1) Luminance: multi-reg vs mean luminance-only
+% ============================================================
+% Positive diff => multi-reg > mean-luminance
 y_lum_multi = corrCoeff_imgStats_multiRegression.humanvsmodel(:);
-
-% (B) Mean luminance-only model (single predictor)
-y_meanlum = corrCoeff_imgStats.humanvsmodel(idx_meanlum, :).';
+y_meanlum   = corrCoeff_imgStats.humanvsmodel(idx_meanlum, :).';
 
 if numel(y_lum_multi) ~= numel(y_meanlum)
     error('Size mismatch: multi-reg luminance (%d) vs mean-luminance (%d).', numel(y_lum_multi), numel(y_meanlum));
@@ -320,7 +326,6 @@ end
 y_lum_multi = abs(y_lum_multi);
 y_meanlum   = abs(y_meanlum);
 
-% --- Paired t-test + Cohen's dz + CI(dz) ---
 diff_lum = y_lum_multi - y_meanlum;
 [~, p_lum, ~, stats_lum] = ttest(diff_lum, 0, 'Alpha', alpha, 'Tail', 'both');
 
@@ -328,23 +333,18 @@ n_lum  = numel(diff_lum);
 df_lum = stats_lum.df;
 t_lum  = stats_lum.tstat;
 
-dz_lum = mean(diff_lum) / std(diff_lum);  % paired dz
+dz_lum = mean(diff_lum) / std(diff_lum);
 [deltaL_lum, deltaU_lum] = local_nct_delta_ci(t_lum, df_lum, alpha);
 dzL_lum = deltaL_lum / sqrt(n_lum);
 dzU_lum = deltaU_lum / sqrt(n_lum);
 
-% ------------------------------------------------
-% (2) Specular: multi-reg (contrast+coverage+sharpness) vs contrast-only
-% ------------------------------------------------
-% Multi-reg specular model already loaded above:
-%   corrCoeff_specularMetrics_multiRegression.humanvsmodel
-
+% ============================================================
+% (2) Specular: multi-reg vs contrast-only
+% ============================================================
+% Positive diff => multi-reg > contrast-only
 y_spec_multi = corrCoeff_specularMetrics_multiRegression.humanvsmodel(:);
+y_contrast   = corrCoeff_specularMetrics.human.contrast(:);
 
-% Contrast-only model (from corrCoeff_specularMetrics)
-y_contrast = corrCoeff_specularMetrics.human.contrast(:);
-
-% Ensure lengths match
 if numel(y_spec_multi) ~= numel(y_contrast)
     error('Size mismatch: multi-reg specular (%d) vs contrast-only (%d).', numel(y_spec_multi), numel(y_contrast));
 end
@@ -364,9 +364,45 @@ dz_spec = mean(diff_spec) / std(diff_spec);
 dzL_spec = deltaL_spec / sqrt(n_spec);
 dzU_spec = deltaU_spec / sqrt(n_spec);
 
-% -----------------------------
+% ============================================================
+% (3) One-layer (1 kernel) vs Three-layer (64 kernels)
+% ============================================================
+% Positive diff => three-layer(64) > one-layer(1)
+
+% Find kernel indices
+idx_1kernel  = find(kernelN_list.onelayer  == 1,  1, 'first');   % 1
+idx_64kernel = find(kernelN_list.threelayer == 64, 1, 'first');  % 4
+
+if isempty(idx_1kernel) || isempty(idx_64kernel)
+    error('Could not find kernel indices: one-layer(1) or three-layer(64).');
+end
+
+% --- IMPORTANT: use RAW 24 values (not means) ---
+% corr_all.onelayer.human.human has size: (12 x 2 x 4)
+% reshape -> (24 x 4) where 24 = 12(shape) + 12(lighting)
+r_one_all   = reshape(corr_all.onelayer.human.human,   24, length(kernelN_list.onelayer));
+r_three_all = reshape(corr_all.threelayer.human.human, 24, length(kernelN_list.threelayer));
+
+r_one1    = r_one_all(:, idx_1kernel);       % 24x1
+r_three64 = r_three_all(:, idx_64kernel);    % 24x1
+
+diff_net = r_three64 - r_one1;
+
+% Paired t-test + Cohen's dz + CI(dz)
+[~, p_net, ~, stats_net] = ttest(diff_net, 0, 'Alpha', alpha, 'Tail', 'both');
+
+n_net  = numel(diff_net);
+df_net = stats_net.df;
+t_net  = stats_net.tstat;
+
+dz_net = mean(diff_net) / std(diff_net);
+[deltaL_net, deltaU_net] = local_nct_delta_ci(t_net, df_net, alpha);
+dzL_net = deltaL_net / sqrt(n_net);
+dzU_net = deltaU_net / sqrt(n_net);
+
+% ============================================================
 % Print full stats
-% -----------------------------
+% ============================================================
 fprintf('\n=== Requested paired comparisons (n = %d patterns) ===\n', n_lum);
 
 fprintf('\n(1) All luminance stats (multi-reg) vs mean luminance-only:\n');
@@ -387,49 +423,110 @@ else
         df_spec, t_spec, p_spec, dz_spec, dzL_spec, dzU_spec);
 end
 
+fprintf('\n(3) One-layer (1 kernel) vs Three-layer (64 kernels):\n');
+if p_net < 1e-3
+    fprintf('t(%d) = %.2f, p < 0.001, Cohen''s dz = %.3f, 95%% CI [%.3f, %.3f]\n', ...
+        df_net, t_net, dz_net, dzL_net, dzU_net);
+else
+    fprintf('t(%d) = %.2f, p = %.3f, Cohen''s dz = %.3f, 95%% CI [%.3f, %.3f]\n', ...
+        df_net, t_net, p_net, dz_net, dzL_net, dzU_net);
+end
 
-%% ============================================================
-% Local functions
-%% ============================================================
+
+
 function [deltaL, deltaU] = local_nct_delta_ci(tObs, df, alpha)
-
+% 100*(1-alpha)% CI for noncentrality parameter delta of noncentral t,
+% inverted from observed tObs (two-sided).
+%
 % Solve:
 %   nctcdf(tObs; df, deltaL) = 1 - alpha/2
 %   nctcdf(tObs; df, deltaU) = alpha/2
 
+    if exist('nctcdf','file') ~= 2
+        error('nctcdf not found. Requires Statistics and Machine Learning Toolbox.');
+    end
+
     targetL = 1 - alpha/2;  % 0.975
     targetU = alpha/2;      % 0.025
 
-    deltaL = local_solve_delta(tObs, df, targetL);
-    deltaU = local_solve_delta(tObs, df, targetU);
+    deltaL = local_solve_delta_robust(tObs, df, targetL);
+    deltaU = local_solve_delta_robust(tObs, df, targetU);
 
     if deltaL > deltaU
         tmp = deltaL; deltaL = deltaU; deltaU = tmp;
     end
 end
 
-function delta = local_solve_delta(tObs, df, target)
-% Solve nctcdf(tObs; df, delta) = target for delta using bracketing + fzero.
+function delta = local_solve_delta_robust(tObs, df, target)
+% Robustly solve nctcdf(tObs; df, delta) = target for delta.
+% Avoids non-finite endpoints and uses a safe fallback if bracketing fails.
 
     fun = @(d) nctcdf(tObs, df, d) - target;
 
-    lo = -1e4; hi = 1e4;
-    flo = fun(lo); fhi = fun(hi);
+    % Start near a reasonable center; delta is typically on the order of tObs
+    center = tObs;
 
-    iter = 0;
-    while sign(flo) == sign(fhi) && iter < 50
-        lo = lo * 2;
-        hi = hi * 2;
-        flo = fun(lo);
-        fhi = fun(hi);
-        iter = iter + 1;
+    % Candidate bracket half-widths (grow gradually)
+    widths = [0.5 1 2 5 10 20 50 100 200 500 1000 2000];
+
+    lo = NaN; hi = NaN;
+    flo = NaN; fhi = NaN;
+
+    % Try to find a finite bracket with sign change
+    for w = widths
+        lo_c = center - w;
+        hi_c = center + w;
+
+        flo_c = fun(lo_c);
+        fhi_c = fun(hi_c);
+
+        if isfinite(flo_c) && isreal(flo_c) && isfinite(fhi_c) && isreal(fhi_c)
+            if sign(flo_c) ~= sign(fhi_c)
+                lo = lo_c; hi = hi_c;
+                flo = flo_c; fhi = fhi_c;
+                break;
+            end
+        end
     end
 
-    if sign(flo) == sign(fhi)
-        % best-effort fallback (rare)
-        delta = tObs;
-        return;
+    % If still not bracketed, try asymmetric expansion (sometimes needed)
+    if isnan(lo)
+        for w = widths
+            lo_c = center - w;
+            hi_c = center + 5*w;
+
+            flo_c = fun(lo_c);
+            fhi_c = fun(hi_c);
+
+            if isfinite(flo_c) && isreal(flo_c) && isfinite(fhi_c) && isreal(fhi_c)
+                if sign(flo_c) ~= sign(fhi_c)
+                    lo = lo_c; hi = hi_c;
+                    flo = flo_c; fhi = fhi_c;
+                    break;
+                end
+            end
+        end
     end
 
-    delta = fzero(fun, [lo, hi]);
+    % If we found a valid bracket, use fzero safely
+    if ~isnan(lo)
+        try
+            delta = fzero(fun, [lo, hi]);
+            return;
+        catch
+            % fall through to fallback
+        end
+    end
+
+    % Fallback: bounded minimization of squared error on a safe delta range
+    % (keeps code from crashing even in rare numeric corner cases)
+    bound = 2000; % wide enough for typical cases, avoids nctcdf blowups
+    obj = @(d) (fun(d)).^2;
+
+    try
+        delta = fminbnd(obj, center - bound, center + bound);
+    catch
+        % last resort: return center
+        delta = center;
+    end
 end
